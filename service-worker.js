@@ -1,5 +1,5 @@
 /* service-worker.js — 离线缓存应用外壳 */
-const CACHE = 'meeting-app-v1';
+const CACHE = 'meeting-app-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -25,20 +25,17 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// 网络优先:在线时总是拿最新版本,离线时回退缓存
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
-    caches.match(e.request).then((cached) => {
-      return (
-        cached ||
-        fetch(e.request)
-          .then((res) => {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
-            return res;
-          })
-          .catch(() => cached)
-      );
-    })
+    fetch(e.request)
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
