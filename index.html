@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="会议记录" />
+  <title>会议记录 · ToDo</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部状态栏 -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot" id="liveDot"></span>
+        <span>会议记录</span>
+      </div>
+      <div class="timer" id="timer">00:00</div>
+    </header>
+
+    <!-- 主内容区:多个面板切换 -->
+    <main class="content">
+
+      <!-- 面板:欢迎 / 声纹登记 -->
+      <section class="panel active" id="panel-setup" data-panel="setup">
+        <div class="hero">
+          <h1>开会时打开它</h1>
+          <p class="muted">实时记录对话 · 自动区分说话人 · 说"会议结束"自动生成 checklist 和 todo</p>
+        </div>
+
+        <div class="card">
+          <h2>① 声纹登记</h2>
+          <p class="muted small">先各录一小段声音,App 用来自动判断"谁在说话"。每段念 3~5 秒即可(比如念一句话)。</p>
+
+          <div class="enroll-row">
+            <div class="enroll-item" id="enroll-me">
+              <div class="enroll-name">我</div>
+              <button class="btn enroll-btn" data-speaker="me">按住录我的声音</button>
+              <div class="enroll-state muted small">未登记</div>
+              <div class="meter"><span></span></div>
+            </div>
+            <div class="enroll-item" id="enroll-other">
+              <div class="enroll-name">对方</div>
+              <button class="btn enroll-btn" data-speaker="other">按住录对方声音</button>
+              <div class="enroll-state muted small">未登记</div>
+              <div class="meter"><span></span></div>
+            </div>
+          </div>
+
+          <p class="hint small" id="enrollHint">提示:两个人音色差别越大,自动区分越准。也可以跳过登记,先只记录文字。</p>
+        </div>
+
+        <div class="card">
+          <h2>② 开始</h2>
+          <label class="check">
+            <input type="checkbox" id="optDiarize" checked />
+            <span>自动区分说话人(需要先登记声纹)</span>
+          </label>
+          <button class="btn primary big" id="startBtn">开始会议</button>
+          <p class="muted small center">开始后请允许麦克风权限</p>
+        </div>
+
+        <button class="link-btn" id="openHistory">查看历史记录 →</button>
+      </section>
+
+      <!-- 面板:进行中 -->
+      <section class="panel" id="panel-live" data-panel="live">
+        <div class="live-head">
+          <div class="speakers">
+            <button class="spk-chip me active" id="chipMe" data-speaker="me">我</button>
+            <button class="spk-chip other" id="chipOther" data-speaker="other">对方</button>
+          </div>
+          <div class="live-hint muted small" id="liveMode">自动区分中…</div>
+        </div>
+
+        <div class="transcript" id="transcript">
+          <div class="empty muted" id="transcriptEmpty">开始说话,文字会实时出现在这里…<br/>说一句"会议结束"即可自动结束。</div>
+        </div>
+
+        <div class="interim" id="interim"></div>
+
+        <div class="live-actions">
+          <button class="btn ghost" id="pauseBtn">暂停</button>
+          <button class="btn danger" id="endBtn">会议结束</button>
+        </div>
+      </section>
+
+      <!-- 面板:结果 -->
+      <section class="panel" id="panel-result" data-panel="result">
+        <div class="result-head">
+          <h1>会议小结</h1>
+          <div class="muted small" id="resultMeta"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-h">
+            <h2>✅ Checklist(要点/决议)</h2>
+            <button class="mini-btn" data-copy="checklist">复制</button>
+          </div>
+          <ul class="list" id="checklist"></ul>
+        </div>
+
+        <div class="card">
+          <div class="card-h">
+            <h2>📝 To-Do(待办/行动项)</h2>
+            <button class="mini-btn" data-copy="todo">复制</button>
+          </div>
+          <ul class="list todo" id="todo"></ul>
+        </div>
+
+        <div class="card collapsible">
+          <div class="card-h" id="toggleTranscript">
+            <h2>📄 完整记录</h2>
+            <button class="mini-btn" data-copy="full">复制全文</button>
+          </div>
+          <div class="full-transcript" id="fullTranscript"></div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn primary" id="shareBtn">分享 / 发给我</button>
+          <button class="btn ghost" id="downloadBtn">下载 .txt</button>
+          <button class="btn ghost" id="newBtn">新会议</button>
+        </div>
+      </section>
+
+      <!-- 面板:历史 -->
+      <section class="panel" id="panel-history" data-panel="history">
+        <div class="result-head">
+          <h1>历史记录</h1>
+          <button class="link-btn" id="backFromHistory">← 返回</button>
+        </div>
+        <div id="historyList"></div>
+      </section>
+
+    </main>
+
+    <!-- 全局提示条 -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <!-- 模块 -->
+  <script src="js/storage.js"></script>
+  <script src="js/voiceprint.js"></script>
+  <script src="js/recognition.js"></script>
+  <script src="js/extractor.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

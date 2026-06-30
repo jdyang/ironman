@@ -1,0 +1,20 @@
+{
+  "name": "会议记录 · ToDo",
+  "short_name": "会议记录",
+  "description": "聊天/开会时实时记录对话,自动区分说话人,说“会议结束”即生成 checklist 和待办。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e2c47"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- 麦克风 -->
+  <rect x="216" y="118" width="80" height="150" rx="40" fill="#4f9dff"/>
+  <path d="M176 238a80 80 0 0 0 160 0" fill="none" stroke="#4f9dff" stroke-width="20" stroke-linecap="round"/>
+  <line x1="256" y1="318" x2="256" y2="356" stroke="#4f9dff" stroke-width="20" stroke-linecap="round"/>
+  <!-- checklist -->
+  <g stroke="#2ecc8f" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M150 392l26 26 44-52"/>
+    <path d="M150 312l26 26 44-52"/>
+  </g>
+  <g stroke="#ff9f43" stroke-width="18" stroke-linecap="round">
+    <line x1="252" y1="402" x2="372" y2="402"/>
+    <line x1="252" y1="330" x2="372" y2="330"/>
+  </g>
+</svg>
