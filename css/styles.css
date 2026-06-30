@@ -204,6 +204,24 @@ html, body {
 
 .collapsible .full-transcript { display: none; margin-top: 10px; }
 .collapsible.open .full-transcript { display: block; }
+
+/* AI 设置 */
+.ai-body { display: none; margin-top: 12px; }
+#aiCard.open .ai-body { display: block; }
+.ai-status { white-space: nowrap; }
+.ai-status.on { color: var(--ok); }
+.text-input {
+  width: 100%;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font-size: 15px;
+  margin: 8px 0;
+}
+.text-input:focus { outline: none; border-color: var(--primary); }
+select.text-input { appearance: none; }
 .full-transcript {
   max-height: 320px; overflow-y: auto;
   font-size: 14px; line-height: 1.6;

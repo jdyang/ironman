@@ -260,7 +260,7 @@
     }
   }
 
-  function endMeeting() {
+  async function endMeeting() {
     if (ending) return;
     ending = true;
     if (rec) rec.stop();
@@ -270,19 +270,51 @@
     if (vpStarted) { vp.stop(); vpStarted = false; }
 
     const durationSec = Math.round((Date.now() - startMs) / 1000);
-    const result = Extractor.extract(segments);
     const meeting = {
       id: 'm_' + Date.now(),
       createdAt: Date.now(),
       durationSec,
       diarized: diarize,
       segments: segments.slice(),
-      checklist: result.checklist,
-      todo: result.todo,
+      checklist: [],
+      todo: [],
+      ai: false,
     };
+
+    // 先用本地规则版兜底,保证一定有结果
+    const local = Extractor.extract(segments);
+    meeting.checklist = local.checklist;
+    meeting.todo = local.todo;
+
+    // 若开启 AI 且有内容,尝试用 Claude 生成更高质量结果
+    if (LLM.enabled() && segments.length) {
+      renderResult(meeting);
+      showPanel('result');
+      setAiBusy(true);
+      try {
+        const r = await LLM.summarize(segments);
+        meeting.checklist = r.checklist;
+        meeting.todo = r.todo;
+        meeting.ai = true;
+      } catch (e) {
+        toast('AI 生成失败,已用本地版:' + (e.message || e));
+      }
+      setAiBusy(false);
+      Storage.save(meeting);
+      renderResult(meeting);
+      return;
+    }
+
     Storage.save(meeting);
     renderResult(meeting);
     showPanel('result');
+  }
+
+  function setAiBusy(busy) {
+    const meta = $('resultMeta');
+    if (busy) {
+      meta.textContent = '🤖 Claude 正在生成纪要…';
+    }
   }
 
   // ---------- 结果渲染 ----------
@@ -293,7 +325,8 @@
     $('timer').textContent = '00:00';
     $('resultMeta').textContent =
       fmtDate(m.createdAt) + ' · 时长 ' + fmtClock(m.durationSec) +
-      (m.diarized ? ' · 自动区分' : ' · 手动');
+      (m.diarized ? ' · 自动区分' : ' · 手动') +
+      (m.ai ? ' · 🤖 Claude' : '');
 
     // checklist
     const cl = $('checklist');
@@ -448,8 +481,40 @@
   }
 
   // ---------- 事件绑定 ----------
+  function loadAiSettings() {
+    const c = LLM.getConfig();
+    $('aiEnabled').checked = !!c.enabled;
+    $('aiKey').value = c.key || '';
+    if (c.model) $('aiModel').value = c.model;
+    updateAiStatus();
+  }
+  function updateAiStatus() {
+    const el = $('aiStatus');
+    if (LLM.enabled()) {
+      el.textContent = '已开启 · ' + LLM.model().replace('claude-', '');
+      el.classList.add('on');
+    } else {
+      el.textContent = '未开启';
+      el.classList.remove('on');
+    }
+  }
+  function wireAi() {
+    $('toggleAi').addEventListener('click', () => $('aiCard').classList.toggle('open'));
+    $('aiSave').addEventListener('click', () => {
+      LLM.setConfig({
+        enabled: $('aiEnabled').checked,
+        key: $('aiKey').value.trim(),
+        model: $('aiModel').value,
+      });
+      updateAiStatus();
+      toast($('aiEnabled').checked && $('aiKey').value.trim() ? 'AI 纪要已开启 ✓' : '已保存(AI 未开启)');
+    });
+  }
+
   function init() {
     wireEnroll();
+    wireAi();
+    loadAiSettings();
     refreshDiarizeOption();
 
     $('startBtn').addEventListener('click', startMeeting);

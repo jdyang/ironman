@@ -65,6 +65,27 @@
           <p class="muted small center">开始后请允许麦克风权限</p>
         </div>
 
+        <div class="card collapsible" id="aiCard">
+          <div class="card-h" id="toggleAi">
+            <h2>🤖 AI 纪要(可选)</h2>
+            <span class="ai-status muted small" id="aiStatus">未开启</span>
+          </div>
+          <div class="ai-body">
+            <p class="muted small">填入你自己的 Anthropic API key,会议结束后用 Claude 生成更高质量的 checklist / todo。Key 只保存在本机,不上传、不进代码。留空则用本地规则版。</p>
+            <label class="check">
+              <input type="checkbox" id="aiEnabled" />
+              <span>开启 AI 纪要</span>
+            </label>
+            <input class="text-input" id="aiKey" type="password" placeholder="sk-ant-..." autocomplete="off" />
+            <select class="text-input" id="aiModel">
+              <option value="claude-opus-4-8">Opus 4.8 · 最强(默认)</option>
+              <option value="claude-sonnet-4-6">Sonnet 4.6 · 均衡省钱</option>
+              <option value="claude-haiku-4-5">Haiku 4.5 · 最快最省</option>
+            </select>
+            <button class="btn ghost" id="aiSave">保存设置</button>
+          </div>
+        </div>
+
         <button class="link-btn" id="openHistory">查看历史记录 →</button>
       </section>
 
@@ -145,6 +166,7 @@
 
   <!-- 模块 -->
   <script src="js/storage.js"></script>
+  <script src="js/llm.js"></script>
   <script src="js/voiceprint.js"></script>
   <script src="js/recognition.js"></script>
   <script src="js/extractor.js"></script>

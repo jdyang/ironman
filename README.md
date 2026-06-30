@@ -17,6 +17,16 @@
 
 历史会议保存在本机(localStorage),可在首页"查看历史记录"里回看。
 
+### 🤖 可选:用 Claude 生成高质量纪要
+
+首页"🤖 AI 纪要(可选)"里填入你自己的 **Anthropic API key**,会议结束后会用 Claude 生成更准确的 checklist / todo(自动分清谁负责、识别截止时间),质量远好于本地规则版。
+
+- Key 只保存在**你手机本地**(localStorage),不上传、不写进代码、不进 git。
+- 直接从浏览器调用 Claude API(带 `anthropic-dangerous-direct-browser-access` 头)。
+- 没配置 key 或调用失败时,自动回退到本地规则版,功能不受影响。
+- 可选模型:Opus 4.8(最强,默认)/ Sonnet 4.6(均衡省钱)/ Haiku 4.5(最快最省)。
+- ⚠️ 这是 BYO-key 的个人用法。由于站点是公开的,**不要在别人的设备上输入你的 key**。
+
 ## 运行
 
 需要通过 `http(s)` 访问(麦克风和 Service Worker 不能用 `file://`)。任选一种:
